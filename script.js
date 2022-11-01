@@ -1,3 +1,12 @@
+let roundNumber = 1;
+let playerScore = 0;
+let computerScore = 0;
+let playerSelection = '';
+let computerSelection = '';
+let gameOutcome = '';
+const resultsContainer = document.querySelector('.results-container');
+const buttons = document.querySelectorAll('button');
+
 function getComputerChoice() {
 	let moves = ['rock', 'paper', 'scissors']
 	let randomNumber = Math.floor(Math.random()*3); //generate random number between 0 and 2
@@ -6,10 +15,12 @@ function getComputerChoice() {
 	return move;
 }
 
-function playRound(roundNumber, playerSelection, computerSelection) {
-	let roundResult = '';
+function playRound(playerSelection, computerSelection) {
 
+	let roundResult = '';
+	
 	playerSelection = playerSelection.toLowerCase();
+	computerSelection = getComputerChoice();
 
 	//resolve round winner
 	if (playerSelection === 'rock') {
@@ -48,41 +59,41 @@ function playRound(roundNumber, playerSelection, computerSelection) {
 			roundResult = `You Win! Scissors beats Paper`;
 			playerScore ++;
 		}
-	}
+	};
 
-	console.log(`
+	if (playerScore < 5 && computerScore < 5) {
+		resultsContainer.innerText = `
 Player Selection: ${playerSelection}.
 Computer Selection: ${computerSelection}.	
 Round number: ${roundNumber}.
 Round result: ${roundResult}.
 Player Score: ${playerScore}. Computer Score: ${computerScore}
-	`);
+		`;
+		roundNumber ++;
+	} else {
+		if (playerScore > computerScore) { gameOutcome = 'You Win!' }
+		else if (playerScore < computerScore ) { gameOutcome = 'You Lose!' }
+		resultsContainer.innerText = `
+Game Outcome: ${gameOutcome}.
+Total Player Score: ${playerScore}.
+Total Computer Score: ${computerScore}
+		`;
+		buttons.forEach(button => {
+			button.style.pointerEvents = 'none';
+			button.removeEventListener('click', clickHandler);
+		})
+	}
 	
 	return;
 }
 
-function game() {
-	let playerSelection = '';
-	let computerSelection = '';
-	let gameOutcome = '';
-
-	//play 5 rounds of game
-	for (let i = 0; i < 5; i++) {
-		let roundNumber = i + 1;
-		playerSelection = prompt(`Please enter 'Rock', 'Paper' or 'Scissors'`);
-		computerSelection = getComputerChoice();
-		playRound(roundNumber, playerSelection, computerSelection);
-	}
-
-	// report winner or loser
-	if (playerScore > computerScore) { gameOutcome = 'You Win!' }
-	else if (playerScore < computerScore ) { gameOutcome = 'You Lose!' }
-	else { gameOutcome = `It's a Draw!`}
-
-	console.log(`Game Outcome: ${gameOutcome} Total Player Score: ${playerScore}. Total Computer Score: ${computerScore}`);
+function clickHandler(e) {
+	playerSelection = e.target.innerText;
+	playRound(playerSelection, computerSelection);
 }
 
-let playerScore = 0;
-let computerScore = 0;
-game();
+buttons.forEach(button => {
+	button.addEventListener('click', clickHandler);
+})
+
 
